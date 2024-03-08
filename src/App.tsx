@@ -3,9 +3,8 @@ import "./App.css";
 import ReactAudioPlayer from "react-audio-player";
 import Uploader from "./components/Uploader";
 import { Button } from "antd";
-import Markdown from "react-markdown";
-import TextArea from "antd/es/input/TextArea";
 import useTranscription from "./hooks/useTranscription";
+import Editor from "./components/Editor";
 
 function App() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -17,10 +16,6 @@ function App() {
   const handleSubmit = async () => {
     const result = await transcribe();
     setTranscript(result);
-  };
-
-  const handleTextEdit = (text: string) => {
-    setTranscript(text);
   };
 
   return (
@@ -53,27 +48,7 @@ function App() {
         style={{ width: "100%" }}
         controls
       />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          gap: "20px",
-          paddingTop: 50,
-          width: "100%",
-        }}
-      >
-        <div style={{ flex: 1, maxWidth: "30%", paddingTop: "1em" }}>
-          <TextArea
-            autoSize
-            placeholder="Transcription"
-            value={transcript}
-            onChange={(e) => handleTextEdit(e.target.value)}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <Markdown>{transcript}</Markdown>
-        </div>
-      </div>
+      <Editor initialValue={transcript} />
       {messageContext}
     </div>
   );
