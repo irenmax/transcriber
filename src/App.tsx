@@ -3,16 +3,14 @@ import "./App.css";
 import ReactAudioPlayer from "react-audio-player";
 import Uploader from "./components/Uploader";
 import { Button, Drawer, Input, Select } from "antd";
-import useTranscription from "./hooks/useTranscription";
+import useTranscription, { ApiType } from "./hooks/useTranscription";
 import Editor from "./components/Editor";
 import { SettingOutlined } from "@ant-design/icons";
-
-type TransciptionApi = "openAi" | "assemblyAi";
 
 function App() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [transcript, setTranscript] = useState("");
-  const [api, setApi] = useState<TransciptionApi>("openAi");
+  const [api, setApi] = useState<ApiType>("assemblyAi");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
 

@@ -1,29 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import OpenAI from "openai";
 import { message } from "antd";
 import formatTranscription from "../utils/assemblyAI/formatTranscription";
-import { AssemblyTranscript } from "../types/AssemblyTranscript";
-
-const mockAssemblyTranscript: AssemblyTranscript = {
-  utterances: [
-    {
-      speaker: "A",
-      text: "Hello",
-    },
-    {
-      speaker: "B",
-      text: "World",
-    },
-    {
-      speaker: "A",
-      text: "How are you?",
-    },
-    {
-      speaker: "B",
-      text: "I'm fine",
-    },
-  ],
-};
+import { AssemblyAI } from "assemblyai";
 
 type UseOpenAiProps = {
   api: ApiType;
@@ -45,51 +24,60 @@ const useTranscription = ({
   language,
   api,
 }: UseOpenAiProps): TranscriptionApi => {
-  const [openAi, setOpenAi] = useState<OpenAI | null>(null);
+  const [client, setClient] = useState<OpenAI | AssemblyAI | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const initOpenAi = (key: string) => {
+  useEffect(() => {
+    if (!apiKey) {
+      return;
+    }
     setLoading(true);
     try {
-      const client = new OpenAI({ apiKey: key, dangerouslyAllowBrowser: true });
-      setOpenAi(client);
+      if (api === "openAi") {
+        const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+        setClient(client);
+      }
+      if (api === "assemblyAi") {
+        const client = new AssemblyAI({ apiKey });
+        setClient(client);
+      }
     } catch (e) {
       console.log(e);
       message.error("Invalid API key");
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    if (!apiKey) {
-      return;
-    }
-
-    if (api === "openAi") {
-      initOpenAi(apiKey);
-      return;
-    }
   }, [apiKey, api]);
 
-  const transcribeOpenAi = useCallback(
+  const transcribe = useCallback(
     async (audioFile: File) => {
-      if (api !== "openAi") {
-        return null;
-      }
-      if (!openAi) {
+      if (!client) {
         message.error("Invalid API key");
         return null;
       }
       setLoading(true);
       try {
-        const transcription = await openAi?.audio.transcriptions.create({
-          file: audioFile,
-          language: language,
-          response_format: "json",
-          model: "whisper-1",
-        });
-        return transcription.text;
+        if (api === "openAi") {
+          const openAi = client as OpenAI;
+          const transcribt = await openAi?.audio.transcriptions.create({
+            file: audioFile,
+            language: language,
+            response_format: "json",
+            model: "whisper-1",
+          });
+          setLoading(false);
+          return transcribt.text;
+        }
+        if (api === "assemblyAi") {
+          console.log("transcribe with assembly");
+          const assemblyAI = client as AssemblyAI;
+          const transcript = await assemblyAI.transcripts.transcribe({
+            audio: audioFile,
+            speaker_labels: true,
+            language_code: language,
+          });
+          return formatTranscription(transcript);
+        }
       } catch (e) {
         console.error(e);
         message.error("Error transcribing audio");
@@ -98,25 +86,13 @@ const useTranscription = ({
       }
       return null;
     },
-    [openAi, api, language]
+    [client, api, language]
   );
 
-  const transcriptionApi: TranscriptionApi = useMemo(() => {
-    if (api === "openAi") {
-      return {
-        transcribe: transcribeOpenAi,
-        loading,
-      };
-    }
-
-    return {
-      transcribe: () =>
-        Promise.resolve(formatTranscription(mockAssemblyTranscript)),
-      loading,
-    };
-  }, [api, transcribeOpenAi, loading]);
-
-  return transcriptionApi;
+  return {
+    transcribe,
+    loading,
+  };
 };
 
 export default useTranscription;
