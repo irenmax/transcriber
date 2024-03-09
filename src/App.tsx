@@ -17,14 +17,14 @@ function App() {
   const [apiKey, setApiKey] = useState("");
 
   const { transcribe } = useTranscription({
-    audioFile,
     api,
     apiKey,
+    language: "de",
   });
 
   const handleSubmit = async () => {
-    const result = await transcribe();
-    setTranscript(result);
+    const result = await transcribe(audioFile!);
+    setTranscript(result || "");
   };
 
   return (
