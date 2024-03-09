@@ -37,6 +37,7 @@ export type ApiType = "openAi" | "assemblyAi";
 
 export type TranscriptionApi = {
   transcribe: (audioFile: File) => Promise<string | null>;
+  loading: boolean;
 };
 
 const useTranscription = ({
@@ -45,14 +46,18 @@ const useTranscription = ({
   api,
 }: UseOpenAiProps): TranscriptionApi => {
   const [openAi, setOpenAi] = useState<OpenAI | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const initOpenAi = (key: string) => {
+    setLoading(true);
     try {
       const client = new OpenAI({ apiKey: key, dangerouslyAllowBrowser: true });
       setOpenAi(client);
     } catch (e) {
       console.log(e);
       message.error("Invalid API key");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -76,6 +81,7 @@ const useTranscription = ({
         message.error("Invalid API key");
         return null;
       }
+      setLoading(true);
       try {
         const transcription = await openAi?.audio.transcriptions.create({
           file: audioFile,
@@ -87,6 +93,8 @@ const useTranscription = ({
       } catch (e) {
         console.error(e);
         message.error("Error transcribing audio");
+      } finally {
+        setLoading(false);
       }
       return null;
     },
@@ -97,14 +105,16 @@ const useTranscription = ({
     if (api === "openAi") {
       return {
         transcribe: transcribeOpenAi,
+        loading,
       };
     }
 
     return {
       transcribe: () =>
         Promise.resolve(formatTranscription(mockAssemblyTranscript)),
+      loading,
     };
-  }, [api, transcribeOpenAi]);
+  }, [api, transcribeOpenAi, loading]);
 
   return transcriptionApi;
 };

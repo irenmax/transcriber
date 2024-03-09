@@ -16,13 +16,14 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
 
-  const { transcribe } = useTranscription({
+  const { transcribe, loading } = useTranscription({
     api,
     apiKey,
     language: "de",
   });
 
   const handleSubmit = async () => {
+    if (loading) return;
     const result = await transcribe(audioFile!);
     setTranscript(result || "");
   };
@@ -53,7 +54,12 @@ function App() {
         />
 
         <Uploader onChange={setAudioFile} />
-        <Button onClick={handleSubmit} type="primary" style={{ height: 50 }}>
+        <Button
+          onClick={handleSubmit}
+          type="primary"
+          style={{ height: 50 }}
+          loading={loading}
+        >
           Transcribe
         </Button>
       </div>
