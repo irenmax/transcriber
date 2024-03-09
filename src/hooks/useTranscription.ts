@@ -2,6 +2,8 @@ import { message } from "antd";
 
 type UseTranscriptionProps = {
   audioFile: File | null;
+  api: "openAi" | "assemblyAi";
+  apiKey: string;
 };
 
 type Transcript = {
@@ -32,12 +34,13 @@ const mockTranscript: Transcript = {
   ],
 };
 
-const useTranscription = ({ audioFile }: UseTranscriptionProps) => {
-  const [messageApi, contextHolder] = message.useMessage();
-
+const useTranscription = ({ audioFile, apiKey }: UseTranscriptionProps) => {
   const transcribe = async () => {
+    if (!apiKey) {
+      message.error("Please provide an API key");
+    }
     if (!audioFile) {
-      messageApi.error("No audio file provided");
+      message.error("No audio file provided");
       // return;
     }
 
@@ -54,7 +57,6 @@ const useTranscription = ({ audioFile }: UseTranscriptionProps) => {
 
   return {
     transcribe,
-    messageContext: contextHolder,
   };
 };
 

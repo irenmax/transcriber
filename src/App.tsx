@@ -16,8 +16,10 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
 
-  const { transcribe, messageContext } = useTranscription({
+  const { transcribe } = useTranscription({
     audioFile,
+    api,
+    apiKey,
   });
 
   const handleSubmit = async () => {
@@ -65,7 +67,6 @@ function App() {
         initialValue={transcript}
         fileName={audioFile?.name.split(".")[0] || "transcript"}
       />
-      {messageContext}
       <Drawer
         title="API Settings"
         open={settingsOpen}
