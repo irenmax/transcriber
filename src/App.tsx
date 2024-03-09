@@ -39,9 +39,10 @@ function App() {
         style={{
           display: "flex",
           flexDirection: "row",
-          alignItems: "center",
+          alignItems: "flex-start",
           gap: 20,
           marginBottom: 20,
+          width: "100%",
         }}
       >
         <Button
@@ -50,7 +51,7 @@ function App() {
         />
 
         <Uploader onChange={setAudioFile} />
-        <Button onClick={handleSubmit} type="primary">
+        <Button onClick={handleSubmit} type="primary" style={{ height: 50 }}>
           Transcribe
         </Button>
       </div>
@@ -60,7 +61,10 @@ function App() {
         style={{ width: "100%" }}
         controls
       />
-      <Editor initialValue={transcript} />
+      <Editor
+        initialValue={transcript}
+        fileName={audioFile?.name.split(".")[0] || "transcript"}
+      />
       {messageContext}
       <Drawer
         title="API Settings"
