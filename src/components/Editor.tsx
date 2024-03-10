@@ -1,7 +1,7 @@
 import { FileMarkdownOutlined } from "@ant-design/icons";
 import { Button, Radio, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Markdown from "react-markdown";
 
 type EditorProps = {
