@@ -5,29 +5,21 @@ import { FC, useEffect, useState } from "react";
 import Markdown from "react-markdown";
 
 type EditorProps = {
-  initialValue: string;
+  value: string;
+  onChange: (value: string) => void;
   fileName: string;
 };
 
-const Editor: FC<EditorProps> = ({ initialValue, fileName }) => {
-  const [text, setText] = useState(initialValue);
+const Editor: FC<EditorProps> = ({ value, onChange, fileName }) => {
   const [mode, setMode] = useState<"raw" | "formatted">("formatted");
 
-  useEffect(() => {
-    setText(initialValue);
-  }, [initialValue]);
-
-  const handleTextEdit = (value: string) => {
-    setText(value);
-  };
-
   const downloadTextAsFile = () => {
-    if (!text) {
+    if (!value) {
       message.error("No text to download");
       return;
     }
     const element = document.createElement("a");
-    const file = new Blob([text], { type: "text/plain" });
+    const file = new Blob([value], { type: "text/plain" });
 
     element.href = URL.createObjectURL(file);
     element.download = fileName + ".md";
@@ -63,13 +55,13 @@ const Editor: FC<EditorProps> = ({ initialValue, fileName }) => {
           <TextArea
             autoSize={{ minRows: 10 }}
             placeholder="Transcription"
-            value={text}
-            onChange={(e) => handleTextEdit(e.target.value)}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
           />
         </div>
       ) : (
         <div style={{ flex: 1 }}>
-          <Markdown>{text}</Markdown>
+          <Markdown>{value}</Markdown>
         </div>
       )}
     </div>

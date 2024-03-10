@@ -6,18 +6,22 @@ import { Button, Drawer, Input, Select } from "antd";
 import useTranscription, { ApiType } from "./hooks/useTranscription";
 import Editor from "./components/Editor";
 import { SettingOutlined } from "@ant-design/icons";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [transcript, setTranscript] = useState("");
+  const [transcript, setTranscript] = useLocalStorage("transcript");
   const [api, setApi] = useState<ApiType>("assemblyAi");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
+  const [language, setLanguage] = useState<"de" | "en">("de");
+
+  const [fileName, setFileName] = useLocalStorage("fileName");
 
   const { transcribe, loading } = useTranscription({
     api,
     apiKey,
-    language: "de",
+    language: language,
   });
 
   const handleSubmit = async () => {
@@ -51,7 +55,13 @@ function App() {
           onClick={() => setSettingsOpen(true)}
         />
 
-        <Uploader onChange={setAudioFile} />
+        <Uploader
+          onChange={(file) => {
+            if (!file) return;
+            setAudioFile(file);
+            setFileName(file.name.split(".")[0]);
+          }}
+        />
         <Button
           onClick={handleSubmit}
           type="primary"
@@ -67,8 +77,10 @@ function App() {
         style={{ width: "100%" }}
         controls
       />
+      <h2 style={{ width: "100%", marginBottom: 0 }}>{fileName}</h2>
       <Editor
-        initialValue={transcript}
+        value={transcript}
+        onChange={setTranscript}
         fileName={audioFile?.name.split(".")[0] || "transcript"}
       />
       <Drawer
@@ -92,6 +104,23 @@ function App() {
             value={apiKey}
             placeholder="API Key"
           />
+          <Select
+            defaultValue={language}
+            onChange={setLanguage}
+            style={{ width: 120 }}
+            options={[
+              { label: "German", value: "de" },
+              { label: "English", value: "en" },
+            ]}
+          ></Select>
+          <Button
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            Reset
+          </Button>
         </div>
       </Drawer>
     </div>
