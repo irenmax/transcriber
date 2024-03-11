@@ -1,30 +1,21 @@
-# React + TypeScript + Vite
+# Transcriber
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This simple and basic tool takes an audio file and produces a transcript with the [AsseblyAI](https://www.assemblyai.com/) or [OpenAI](https://platform.openai.com/docs/guides/speech-to-text) transcript API. It comes with a player and Markdown editor to do some basic editing while listening to the audio file.  
 
-Currently, two official plugins are available:
+> ⚠️ You need an API key for one of these APIs - currently, AssemblyAI offers 100 hours of free transcription
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## How to transcribe
+1. Open the settings  
+  a. Select whether you want to use AssemblyAI or OpenAI  
+  b. Enter the API key for the selected API (this has to be done every time, to keep your API key as private as possible)  
+  c. Select the language spoken in the audio file  
+3. Upload the audio file you want to transcribe
+4. Hit **Transcribe** and wait. This might take a while - make sure to stay on the tab
+5. Edit the transcript via the _Raw_ tab or download it as MarkDown file right away.
 
-## Expanding the ESLint configuration
+## Reset editor
+The tool saves the transcript locally, in case the tab crashes or something goes wrong. You can reset everything by clicking **Clear transcript** in the settings.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+##  Local development
+1. run `npm install`
+2. run `npm run dev`
