@@ -51,6 +51,10 @@ const useTranscription = ({
 
   const transcribe = useCallback(
     async (audioFile: File) => {
+      if (!apiKey) {
+        message.error("Please enter your API key");
+        return null;
+      }
       if (!client) {
         message.error("Invalid API key");
         return null;
@@ -80,13 +84,13 @@ const useTranscription = ({
         }
       } catch (e) {
         console.error(e);
-        message.error("Error transcribing audio");
+        message.error({ content: "Error transcribing audio", duration: 0 });
       } finally {
         setLoading(false);
       }
       return null;
     },
-    [client, api, language]
+    [client, api, language, apiKey]
   );
 
   return {

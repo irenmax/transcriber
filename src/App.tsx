@@ -118,8 +118,10 @@ function App() {
               localStorage.clear();
               window.location.reload();
             }}
+            danger
+            style={{ marginTop: 50 }}
           >
-            Reset
+            Clear transcript
           </Button>
         </div>
       </Drawer>
