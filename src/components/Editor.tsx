@@ -1,25 +1,32 @@
 import { FileMarkdownOutlined } from "@ant-design/icons";
 import { Button, Radio, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import Markdown from "react-markdown";
+import useLocalStorage from "../hooks/useLocalStorage";
 
 type EditorProps = {
-  value: string;
-  onChange: (value: string) => void;
+  initialValue: string;
   fileName: string;
 };
 
-const Editor: FC<EditorProps> = ({ value, onChange, fileName }) => {
+const Editor: FC<EditorProps> = ({ initialValue, fileName }) => {
   const [mode, setMode] = useState<"raw" | "formatted">("formatted");
+  const [transcript, setTranscript] = useLocalStorage("transcript");
+
+  useEffect(() => {
+    if (!initialValue || initialValue === "") return;
+    setTranscript(initialValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialValue]);
 
   const downloadTextAsFile = () => {
-    if (!value) {
+    if (!transcript) {
       message.error("No text to download");
       return;
     }
     const element = document.createElement("a");
-    const file = new Blob([value], { type: "text/plain" });
+    const file = new Blob([transcript], { type: "text/plain" });
 
     element.href = URL.createObjectURL(file);
     element.download = fileName + ".md";
@@ -55,13 +62,13 @@ const Editor: FC<EditorProps> = ({ value, onChange, fileName }) => {
           <TextArea
             autoSize={{ minRows: 10 }}
             placeholder="Transcription"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
+            value={transcript}
+            onChange={(e) => setTranscript(e.target.value)}
           />
         </div>
       ) : (
         <div style={{ flex: 1 }}>
-          <Markdown>{value}</Markdown>
+          <Markdown>{transcript}</Markdown>
         </div>
       )}
     </div>

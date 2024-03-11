@@ -10,7 +10,7 @@ import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [transcript, setTranscript] = useLocalStorage("transcript");
+  const [transcript, setTranscript] = useState("");
   const [api, setApi] = useState<ApiType>("assemblyAi");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [apiKey, setApiKey] = useState("");
@@ -79,8 +79,7 @@ function App() {
       />
       <h2 style={{ width: "100%", marginBottom: 0 }}>{fileName}</h2>
       <Editor
-        value={transcript}
-        onChange={setTranscript}
+        initialValue={transcript}
         fileName={audioFile?.name.split(".")[0] || "transcript"}
       />
       <Drawer
